@@ -28,7 +28,7 @@ const App = () => {
     let storedUser = localStorage.getItem("user");
 
     if (storedUser) {
-      axios.get("http://localhost:2000/api/auth/getAllUsers")
+      axios.get("http://localhost:8000/api/auth/getAllUsers")
         .then((res) => {
   dispatch(loginRedux(JSON.parse(storedUser)));
         })
