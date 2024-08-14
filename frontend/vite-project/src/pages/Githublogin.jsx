@@ -4,7 +4,6 @@ import { loginGit } from "../redux/slice/gitSlice.js";
 import { useDispatch} from "react-redux";
 
 
-//  const useGithhub = () =>{
     const Githhublogin = () =>{
 const dispatch=useDispatch();
     const signInWithGithub = async () => {
@@ -27,5 +26,4 @@ return{
 }
    
 };
-// export default useGithhub;
 export default Githhublogin;

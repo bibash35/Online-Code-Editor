@@ -15,13 +15,6 @@ export const handleClose = () => {
 export default function TopHeader() {
     const [isBannerVisible, setIsBannerVisible] = useState(false); 
 
-//     const handleClose = () => {
-//     setIsBannerVisible(false);
-//   };
-
-//   const handleOpen = () => {
-//     setIsBannerVisible(true);
-//   };
 setIsBannerVisibleGlobal = setIsBannerVisible;
 
   return (

@@ -1,25 +1,22 @@
 import axios from "axios";
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import {  useNavigate } from "react-router-dom";
-import ErrorMessage from '../components/ErrorMessage';
-// import { toast } from 'react-hot-toast';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Link, useNavigate } from 'react-router-dom'
+import { Toaster, toast } from 'react-hot-toast';
+import ErrorMessage from "../components/ErrorMessage";
+import { useDispatch } from "react-redux";
+import { loginRedux } from "../redux/slice/userSlice"
 import cat from "../assets/cat.png"
 import bin from "../assets/logo (1).png"
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import { loginGit } from "../redux/slice/gitSlice";
 import { getAuth, signInWithPopup, GithubAuthProvider } from "firebase/auth";
 import {app} from "../config/firebase.config"
-import { useDispatch } from "react-redux";
 
-export default function Signup() {
+export default function Login() {
   const navigate= useNavigate()
   const dispatch = useDispatch()
 
   const [data, setData] = useState({
-    Username: "",
     email: "",
     password: "",
   });
@@ -29,40 +26,72 @@ export default function Signup() {
     setData({...data,[e.target.name]:e.target.value})
       }
 
-      const handleSubmit=(e)=>{
-     e.preventDefault();
+//       const handleSubmit=(e)=>{
+//      e.preventDefault();
+//  axios.post("http://localhost:8000/api/auth/login",data,)
+//       .then((res) => {
+//         toast.success("success");
+//         dispatch(loginRedux(res.data))
+//        localStorage.setItem("user", JSON.stringify(res.data));
+//         navigate('/')
 
-     // Check if password and confirmPassword match
-     
-     axios.post("http://localhost:8000/api/auth/signup",data,)
-      .then((res) => {
-        toast.success("success");
-        navigate('/login')
-        
+//       })
+//       .catch((err) => {
+//         console.log(err);
 
-      })
-      .catch((err) => {
-        console.log(err);
-
-        if (err.response?.status === 400) {
-          console.log(err.response.data.errors);
-          toast.error("bad request");
+//         if (err.response?.status === 400) {
+//           console.log(err.response.data.errors);
+//           toast.error("bad request");
 
 
-          let errorsObj = {};
+//           let errorsObj = {};
 
-          err.response.data.errors.forEach((element) => {
-            errorsObj[element.field] = element.msg
-          });
+//           err.response.data.errors.forEach((element) => {
+//             errorsObj[element.field] = element.msg
+//           });
 
-          setFormError(errorsObj);
-        } 
-        else {
-          toast.error("someting went wrong. try agin later.");
-        }
+//           setFormError(errorsObj);
+//         } 
+//         else {
+//           toast.error("someting went wrong. try agin later.");
+//         }
 
-      });
-  }
+//       });
+//   }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let errors = {};
+
+    // Check if all fields are filled
+    if (data.email && !data.password) {
+      toast.error("Please fill in all fields.");
+    } else {
+      if (!data.email) {
+        toast.error("Please fill in the email.");
+      }
+      if (!data.password) {
+        toast.error("Please fill in the password.");
+      }
+    }
+
+    // Set errors to state if any
+    setFormError(errors);
+
+    if (Object.keys(errors).length === 0) {
+      axios.post("http://localhost:8000/api/auth/login", data)
+        .then((res) => {
+          toast.success("Login successful");
+          dispatch(loginRedux(res.data))
+          localStorage.setItem("user", JSON.stringify(res.data));
+          navigate('/');
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Someting went wrong. try agin later");
+        });
+    }
+  };
+
   const signInWithGithub = async () => {
     const provider = new GithubAuthProvider();
     provider.addScope('user');
@@ -80,11 +109,15 @@ export default function Signup() {
     }
   };
     
+ 
+  
   return (
    <>
+      <Toaster />
+
     {/* Header Section */}
     <div className="bg-gray-200 flex justify-between items-center p-4 ">
-    <Link to={"/"} className="flex items-center justify-between font-bold  text-sm bg-white px-5 py-1 hover:text-blue-700 ml-24">
+      <Link to={"/"} className="flex items-center justify-between font-bold  text-sm bg-white px-5 py-1 hover:text-blue-700 ml-24">
       <FaLongArrowAltLeft className="text-sm mr-3 font-thin"/>
     <img src={bin} className="h-5 " /> 
     <p className="block text-black hover:text-blue-700">Back to JS Bin</p>
@@ -96,26 +129,12 @@ export default function Signup() {
       </div>
     </div>
 
-    {/* Registration Form Section */}
+    {/* Login Form Section */}
     <div className="flex flex-col justify-center items-center min-h-screen">
       <div className=" p-8 shadow-md border border-black">
-      <p className="text-sm  text-center font-semibold  text-[#00000080]">New to JS Bin</p>
-        <h1 className="text-xl  mb-4 text-center">Register</h1>    
-            <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block  text-sm mb-2" htmlFor="username">
-              Username
-            </label>
-            <input
-              type="text"
-              name="Username"
-              className="border border-black w-full py-1 px-2 leading-tight focus:outline-none focus:shadow-outline"
-              value={data.Username}
-            onChange={handleOnChange}
-            />
-          </div>
-          <ErrorMessage msg={formError.Username} />
-
+        <p className="text-sm  text-center font-semibold  text-[#00000080]">Existing users</p>
+        <h1 className="text-xl  mb-4 text-center">Login</h1>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm mb-2" htmlFor="email">
               Email
@@ -123,9 +142,9 @@ export default function Signup() {
             <input
               type="email"
               name="email"
-              className="border border-black w-full py-1 px-2 focus:outline-none focus:border-black"
               value={data.email}
-            onChange={handleOnChange}
+              onChange={handleOnChange}
+              className="border border-black w-full py-1 px-2 focus:outline-none focus:border-black"
             />
           </div>
           <ErrorMessage msg={formError.email}/>
@@ -137,24 +156,27 @@ export default function Signup() {
             <input
               type="password"
               name="password"
-              className="border border-black w-full py-1 px-2 focus:outline-none focus:border-black"
               value={data.password}
-            onChange={handleOnChange}
+              onChange={handleOnChange}
+              className="border border-black w-full py-1 px-2 focus:outline-none focus:border-black"
             />
           </div>
-          <ErrorMessage msg={formError.password} />
+          <ErrorMessage msg={formError.password}/>
           <div className="flex items-center justify-center">
             <button
               type="submit"
-              className="text-black border border-black bg-[#EDEDED] shadow-md py-0 px-8 mt-4 focus:outline-none focus:shadow-outline"
+              className="text-black border font-semibold border-black 
+              shadow-sm bg-[#EDEDED] py-0 px-8 mt-4 focus:outline-none
+               focus:shadow-outline"
             >
-              Register
+              Log in
             </button>
+            
           </div>
-           <p className="text-[#00000080] underline mt-6 font-semibold">
-             Already have account?
-            <Link to={"/login"} className="text-[#00000080] underline">
-              Login
+          <p className="text-[#00000080] underline mt-6 font-semibold">
+            Don’t have an Account?
+            <Link to={"/Register"} className="text-[#00000080] underline">
+              Create account
             </Link>
           </p>
         </form>
@@ -165,7 +187,6 @@ export default function Signup() {
           <Link to={""} className="flex items-center justify-between gap-2 border
            border-black shadow-md py-2 px-6 bg-gray-100"
            onClick={signInWithGithub}
-
            >
     <img src={cat} className="h-7 " />
     <a className="block text-black" href="#">

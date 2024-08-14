@@ -14,7 +14,6 @@ export default function Footer() {
                 AI-powered ad network for devs.{" "}
               </span>
               <span className="text-sm text-[#00000099]">
-                {" "}
                 Get your message in front of the right developers with
                 EthicalAds.
               </span>
