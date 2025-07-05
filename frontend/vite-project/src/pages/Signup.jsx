@@ -45,7 +45,7 @@ export default function Signup() {
       const handleSubmit = (e) => {
     e.preventDefault();
     setFormError({}); 
-    axios.post("http://localhost:8000/api/auth/signup", data)
+    axios.post("https://online-code-editor-backend-j1f4.onrender.com/api/auth/signup", data)
       .then((res) => {
         toast.success("Signup successful");
         navigate("/login");
