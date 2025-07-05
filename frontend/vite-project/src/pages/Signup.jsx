@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {  useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'react-hot-toast';
+import GlobalHeader from "../constant/GlobalHeader";
+import GlobalFooter from "../constant/GlobalFooter";
 import cat from "../assets/cat.png"
-import bin from "../assets/logo (1).png"
-import { FaLongArrowAltLeft } from "react-icons/fa";
 import { loginGit } from "../redux/slice/gitSlice";
 import { getAuth, signInWithPopup, GithubAuthProvider } from "firebase/auth";
 import {app} from "../config/firebase.config"
@@ -22,43 +22,48 @@ export default function Signup() {
   });
   const [formError, setFormError] = useState({
   });
+  
   const handleOnChange = (e) => {
-    setData({...data,[e.target.name]:e.target.value})
+    const { name, value } = e.target;
+  
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  
+    // Remove the error for the specific field if the user starts typing
+    setFormError((prevErrors) => {
+      const updatedErrors = { ...prevErrors };
+      if (updatedErrors[name]) {
+        delete updatedErrors[name]; // Remove the error for the field
       }
+      return updatedErrors;
+    });
+  };
+  
+
       const handleSubmit = (e) => {
-        e.preventDefault();
-        let errors = {};
-    
-        // Check if all fields are filled
-        if (!data.Username && !data.email && !data.password) {
-          toast.error("Please fill in all fields.");
+    e.preventDefault();
+    setFormError({}); 
+    axios.post("http://localhost:8000/api/auth/signup", data)
+      .then((res) => {
+        toast.success("Signup successful");
+        navigate("/login");
+      })
+      .catch((err) => {
+        const responseData = err?.response?.data;
+        if (Array.isArray(responseData?.errors)) {
+          const backendErrors = {};
+          responseData.errors.forEach((error) => {
+            backendErrors[error.field] = error.msg;
+          });
+          setFormError(backendErrors);
         } else {
-          if (!data.Username) {
-            toast.error("Please fill in the username.");
-          }
-          if (!data.email) {
-            toast.error("Please fill in the email.");
-          }
-          if (!data.password) {
-            toast.error("Please fill in the password.");
-          }
+          toast.error(responseData?.msg || "Signup failed");
         }
-    
-        // Set errors to state if any
-        setFormError(errors);
-    
-        if (Object.keys(errors).length === 0) {
-          axios.post("http://localhost:8000/api/auth/signup", data)
-            .then((res) => {
-              toast.success("Signup successful");
-              navigate('/login');
-            })
-            .catch((err) => {
-              console.log(err);
-              toast.error("Someting went wrong. try agin later");
-            });
-        }
-      };
+        console.error("Signup Error:", responseData);
+      });
+  };
 
   const signInWithGithub = async () => {
     const provider = new GithubAuthProvider();
@@ -80,21 +85,9 @@ export default function Signup() {
   return (
    <>
            <Toaster />
+         <GlobalHeader/>
 
-    {/* Header Section */}
-    <div className="bg-gray-200 flex justify-between items-center p-4 ">
-    <Link to={"/"} className="flex items-center justify-between font-bold  text-sm bg-white px-5 py-1 hover:text-blue-700 ml-24">
-      <FaLongArrowAltLeft className="text-sm mr-3 font-thin"/>
-    <img src={bin} className="h-5 " /> 
-    <p className="block text-black hover:text-blue-700">Back to JS Bin</p>
-  </Link>
-      <div className="flex space-x-6 mr-40">
-        <a href="#" className="font-semibold hover:text-blue-700">Account</a>
-        <a href="#" className="font-semibold hover:text-blue-700">Blog</a>
-        <a href="#" className="font-semibold hover:text-blue-700">Help</a>
-      </div>
-    </div>
-
+    
     {/* Registration Form Section */}
     <div className="flex flex-col justify-center items-center min-h-screen">
       <div className=" p-8 shadow-md border border-black">
@@ -113,6 +106,7 @@ export default function Signup() {
             onChange={handleOnChange}
             />
           </div>
+          {formError.Username && <span className="text-red-500 text-sm">{formError.Username}</span>} {/* Display error message */}
 
           <div className="mb-4">
             <label className="block text-sm mb-2" htmlFor="email">
@@ -126,6 +120,7 @@ export default function Signup() {
             onChange={handleOnChange}
             />
           </div>
+          {formError.email && <span className="text-red-500 text-sm">{formError.email}</span>} {/* Display error message */}
 
           <div className="mb-4">
             <label className="block  text-sm  mb-2" htmlFor="password">
@@ -139,6 +134,8 @@ export default function Signup() {
             onChange={handleOnChange}
             />
           </div>
+          {formError.password && <span className="text-red-500 text-sm">{formError.password}</span>} {/* Display error message */}
+
           <div className="flex items-center justify-center">
             <button
               type="submit"
@@ -171,19 +168,9 @@ export default function Signup() {
       </div>
     </div>
 
-    {/* Footer Section */}
-    <div className="bg-gray-200 flex justify-between items-center p-4 mt-5">
-      <div className="flex space-x-6 ml-24 text-[#00000080]">
-        <a href="#" className="font-semibold">About</a>
-        <a href="#" className="font-semibold">Twitter</a>
-        <a href="#" className="font-semibold">GitHub</a>
-        <a href="#" className="font-semibold">YouTube</a>
-        <a href="#" className="font-semibold">Donate</a>
-      </div>
-      <div className="flex mr-40">
-        <a href="#" className="text-sm gap-1 text-[#00000080]">Hack. Learn.Fix.Teach.</a>
-      </div>
-    </div>
+    <GlobalFooter/>
+
    </>
   )
 }
+

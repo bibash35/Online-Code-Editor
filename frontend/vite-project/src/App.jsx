@@ -8,6 +8,9 @@ import { loginRedux } from "./redux/slice/userSlice";
 import { loginGit } from "./redux/slice/gitSlice";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Help from "./pages/Help";
+import Blog from "./pages/Blog";
+import AddLibrary from "./pages/AddLibrary";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -15,6 +18,9 @@ const router = createBrowserRouter(
       <Route index element={<Header />} />
       <Route path="login" element={<Login/>}/>
       <Route path="Register" element={<Signup/>}/>
+      <Route path="help" element={<Help/>}/>
+      <Route path="blog" element={<Blog/>}/>
+      <Route path="library" element={<AddLibrary/>}/>
     </Route>
   )
 );

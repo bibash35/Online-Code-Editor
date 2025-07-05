@@ -28,7 +28,6 @@ const signup = async (req, res, next) => {
   
 
   const login = async (req, res) => {
-    /* server side validation for login  */
   
     let user = await User.findOne({ email: req.body.email }).select('+password'); // null
   
@@ -42,7 +41,7 @@ const signup = async (req, res, next) => {
     }
   
     res.status(401).send({
-      msg: "invalid credentials",
+      msg: "invalid email or password",
     });
   };
   

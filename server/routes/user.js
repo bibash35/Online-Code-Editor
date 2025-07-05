@@ -6,16 +6,59 @@ const Joi = require("joi");
 const router = express.Router();
 
 const signupValidationSchema = Joi.object({
-    Username: Joi.string().min(3).max(30).required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().min(8).required(),
-      // .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
-     
+    Username: Joi.string()
+    .min(3)
+    .max(30)
+    .required()
+    .messages({
+      'any.required': 'User name is required',
+      'string.empty': 'User name is required',
+    }),
+      email: Joi.string()
+    .pattern(/^[a-zA-Z0-9._%+-]+@gmail\.com$/)
+    .required()
+    .messages({
+      'string.pattern.base': 'Email must be a valid Gmail address',
+      'any.required': 'Email is required',
+      'string.empty': 'Email is required',
+    }),
+
+  password: Joi.string()
+    .pattern(
+      new RegExp(
+        '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=[\\]{};:\'",.<>/?]).{8,}$'
+      )
+    )
+    .required()
+    .messages({
+      'string.pattern.base':
+        'Password must include uppercase, lowercase, number, and special character',
+      'any.required': 'Password is required',
+      'string.empty': 'Password is required',
+    }),
     
   });
+
+  const loginValidationSchema = Joi.object({
+  email: Joi.string()
+    .email({ tlds: { allow: false } }) // allow any email, or restrict as needed
+    .required()
+    .messages({
+      'string.email': 'Please enter a valid email address',
+      'any.required': 'Email is required',
+      'string.empty': 'Email is required',
+    }),
+  password: Joi.string()
+    .required()
+    .messages({
+      'any.required': 'Password is required',
+      'string.empty': 'Password is required',
+    }),
+});
+
   
 router.post("/signup",checkValidationSchmea(signupValidationSchema),signup);
-router.post("/login", login);
+router.post("/login", checkValidationSchmea(loginValidationSchema), login);
 router.get("/getAllUsers", getAllUsers);
 
 module.exports = router;   

@@ -16,7 +16,9 @@ import Githublogin from "../pages/Githublogin"
 import Footer from "./Footer";
 import TopHeader from "./TopHeader";
 import { handleOpen } from "./TopHeader";
-
+import Help from '../pages/Help'; 
+import Blog from '../pages/Blog'; 
+import Library from '../pages/AddLibrary'; 
 const Header = () => {
   
   let user = useSelector((store) => store.user.value);
@@ -276,7 +278,10 @@ const Header = () => {
                   </li>
                 </ul>
               )}
-              <span className="text-sm gap-1">Add Library</span>
+              {/* <span className="text-sm gap-1">Add Library</span> */}
+              <Link to="/library" className="text-sm gap-1 hover:text-blue-700">
+  Add Library
+</Link>
             </div>
           </div>
 
@@ -388,12 +393,10 @@ const Header = () => {
                 </>
               )
             }
-            <a href="#blog" className="">
-              Blog
-            </a>
-            <a href="#help" className="">
-              Help
-            </a>
+            
+          <Link to="/blog" >Blog</Link>
+          <Link to="/help" >Help</Link>
+
           </div>
         </div>
       </header>
